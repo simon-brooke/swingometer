@@ -129,14 +129,25 @@
            :y (- cy min-radius)} (as-label label)]])
 
 
-(defn biggest-to-the-middle-sort
-  "Sort this list of `maps` representing parties so that those with the most votes are in
-  the middle."
-  [maps]
-  (let [first-sort (sort-by :votes maps)
-        evens (take-nth 2 first-sort)
-        odds (take-nth 2 (rest first-sort))]
-    (concat evens (reverse odds))))
+(defn- in-mountain-sort
+  "Internal function to mountain-sort; not public. Divide this
+  `sorted-sequence` into even and odd sub-sequences, and return
+  these concatenated back to back."
+  [sorted-sequence]
+  (concat (take-nth 2 sorted-sequence)
+              (reverse (take-nth 2 (rest sorted-sequence)))))
+
+
+(defn mountain-sort
+  "Sort this `sequence` so that the largest elements are in the middle.
+  If `accessor-fn` argument is supplied, it will be used to access a
+  value on the element to compare."
+  ([sequence]
+    (let [first-sort (sort sequence)]
+      (in-mountain-sort first-sort)))
+  ([sequence accessor-fn]
+    (let [first-sort (sort-by accessor-fn sequence)]
+      (in-mountain-sort first-sort))))
 
 
 (defn recursively-draw-segments
@@ -220,7 +231,7 @@
                                        (- 0 mid-point-deflection)
                                        mid-point-deflection)}]
               (apply vector
-                     (cons :g (recursively-draw-segments (biggest-to-the-middle-sort (vals model)) nil total-votes cx cy scale-radius)))
+                     (cons :g (recursively-draw-segments (mountain-sort (vals model) :votes) nil total-votes cx cy scale-radius)))
               [:rect {:class frame-class
                       :id (str id "-frame")
                       :x (* width 0.05) :y (* height .05) :height cy :width (* width 0.9)}]]]]))
