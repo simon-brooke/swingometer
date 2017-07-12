@@ -61,12 +61,10 @@
     :validate-fn html-attr?        :description [:span "HTML attributes, like " [:code ":on-mouse-move"] [:br] "No " [:code ":class"] " or " [:code ":style"] "allowed"]}])
 
 
-(def log (.-log js/console))
+;; (defn abs
+;;   "Return the absolute value of the (numeric) argument."
+;;   [n] (max n (- n)))
 
-
-(defn abs
-  "Return the absolute value of the (numeric) argument."
-  [n] (max n (- n)))
 
 ;; the constant 140 represents the full sweep of the needle
 ;; from the left end of the scale to right end, in degrees.
@@ -112,7 +110,7 @@
   [arg]
   (if
     (and (number? arg) (not (integer? arg)))
-    (.toFixed arg 2)
+    (.toFixed arg 1)
     arg))
 
 
@@ -136,27 +134,51 @@
            :x cx
            :y (- cy min-radius)} (as-label label)]])
 
+(def model {:snp {:id :snp :name "Scottish National Party" :colour "yellow" :votes 100}
+                             :lab {:id :lab :name "Labour Party" :colour "red" :votes 90}
+                             :con {:id :con :name "Conservative Party" :colour "blue" :votes 80}
+                             :ld  {:id :ld :name "Liberal Democrats" :colour "GoldenRod" :votes 70}
+                             :grn {:id :grn :name "Scottish Green Party" :colour "green" :votes 60}
+                             :ukp {:id :ukp :name "United Kingdom Independence Party" :colour "DarkViolet" :votes 50}})
+
+(defn biggest-to-the-middle-sort
+  "Sort this list of `maps` representing parties so that those with the most votes are in
+  the middle."
+  [maps]
+  (let [first-sort (sort-by :votes maps)
+        evens (take-nth 2 first-sort)
+        odds (take-nth 2 (rest first-sort))]
+    (concat evens (reverse odds))))
+
 
 (defn recursively-draw-segments
+  "Walk down a list of parties, returning a labelled SVG arc segment for each one.
+  `still-to-do` is the (remainder of the) list of parties being scanned, should
+  initially be the whole list;
+  `done` is the parties which have been scanned, and should initially be `nil`.
+  `total-votes` is the total number of votes for all parties.
+  `cx` and `cy` are the cartesian coordinates of the centre of arc.
+  `radius` is the radius of the arc."
   [still-to-do done total-votes cx cy radius]
-  (log (string/join " " ["\nstill-to-do" still-to-do "\ndone" done "\ntotal-votes" total-votes "cx" cx "cy" cy "radius" radius]))
   (if
     (empty? still-to-do) nil
     (let [votes-done (reduce + (map :votes done))
           start-angle (deflection votes-done 0 total-votes)
           party (first still-to-do)
-          end-angle (deflection (+ (:votes party) votes-done) 0 total-votes)]
-      (cons [:g [:path {:class "snm-scale"
-                        :id (str (:id party) "-segment")
-                        :style {:stroke (:colour party)}
-                        :d (describe-arc cx cy radius start-angle end-angle)}]
-             (gradation cx cy (* radius 0.8) (* radius 1.1) start-angle
-                        (let [vote-share (* (/ (:votes party) total-votes) 100)]
+          end-angle (deflection (+ (:votes party) votes-done) 0 total-votes)
+          others (recursively-draw-segments (rest still-to-do) (cons party done) total-votes cx cy radius)
+          vote-share (* (/ (:votes party) total-votes) 100)]
+      (if (> vote-share 1)
+        (cons [:g [:path {:class "snm-scale"
+                          :id (str (:id party) "-segment")
+                          :style {:stroke (:colour party)}
+                          :d (describe-arc cx cy radius start-angle end-angle)}]
+               (gradation cx cy (* radius 0.8) (* radius 1.1) start-angle
                           (str
                             (if (> vote-share 5) (name (:id party)) "")
-                            (if (> vote-share 10) (str " " (int vote-share) "%")))))]
-            (recursively-draw-segments (rest still-to-do) (cons party done) total-votes cx cy radius)))))
-
+                            (if (> vote-share 10) (str " " (as-label vote-share) "%"))))]
+              others)
+        others))))
 
 
 (defn swingometer
@@ -209,23 +231,8 @@
                       :d (describe-arc cx cy scale-radius
                                        (- 0 mid-point-deflection)
                                        mid-point-deflection)}]
-;;               (if (and (> gradations 0) (> total-votes 0))
-;;                 (apply vector (cons :g (map #(let
-;;                                                [value (*
-;;                                                         (/
-;;                                                           total-votes
-;;                                                           gradations) %)]
-;;                                                (gradation cx cy gradation-inner needle-length
-;;                                                           (deflection value 0 total-votes)
-;;                                                           value))
-;;                                             (range 0 (+ gradations 1))))))
               (apply vector
-                     (cons :g (recursively-draw-segments (map model (sort (keys model))) nil total-votes cx cy scale-radius)))
+                     (cons :g (recursively-draw-segments (biggest-to-the-middle-sort (vals model)) nil total-votes cx cy scale-radius)))
               [:rect {:class frame-class
                       :id (str id "-frame")
-                      :x (* width 0.05) :y (* height .05) :height cy :width (* width 0.9)}]
-;;               [:circle {:class hub-class
-;;                         :id (str id "-hub")
-;;                         :r (/ height 10) :cx cx :cy cy}]
-              ]
-             ]]))
+                      :x (* width 0.05) :y (* height .05) :height cy :width (* width 0.9)}]]]]))

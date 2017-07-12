@@ -3,3 +3,11 @@
 /*-init.clj
 /resources/public/js/compiled
 out
+
+\.lein-repl-history
+
+\.nrepl-port
+
+*.tgz
+
+*.zip
