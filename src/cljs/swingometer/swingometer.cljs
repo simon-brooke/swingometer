@@ -26,7 +26,7 @@
 ;;;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
 ;;;; USA.
 ;;;;
-;;;; Copyright (C) 2014 Simon Brooke
+;;;; Copyright (C) 2017 Simon Brooke
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -47,8 +47,6 @@
     :validate-fn string?           :description "CSS class names, space separated, for the top-level SVG element"}
    {:name :frame-class   :required false :type "string"                 :default "snm-frame"
     :validate-fn string?           :description "CSS class names, space separated, for the frame"}
-   {:name :hub-class     :required false :type "string"                 :default "snm-hub"
-    :validate-fn string?           :description "CSS class names, space separated, for the hub"}
    {:name :scale-class   :required false :type "string"                 :default "snm-scale"
     :validate-fn string?           :description "CSS class names, space separated, for the scale"}
    {:name :id            :required false :type "string"                 :default "meter"
@@ -59,11 +57,6 @@
     :validate-fn css-style?        :description "CSS styles to add or override"}
    {:name :attr          :required false :type "HTML attr map"
     :validate-fn html-attr?        :description [:span "HTML attributes, like " [:code ":on-mouse-move"] [:br] "No " [:code ":class"] " or " [:code ":style"] "allowed"]}])
-
-
-;; (defn abs
-;;   "Return the absolute value of the (numeric) argument."
-;;   [n] (max n (- n)))
 
 
 ;; the constant 140 represents the full sweep of the needle
@@ -116,7 +109,8 @@
 
 (defn gradation
   "Return as a string an SVG path definition describing a radial stroke from a center
-  at `cx`, cy` starting at `min-radius` and extending to `max-radius`."
+  at `cx`, cy` starting at `min-radius` and extending to `max-radius`, with the specified
+  `label`."
   [cx cy min-radius max-radius angle label]
   [:g {:class "snm-gradation"
        :transform (string/join " " ["rotate(" angle cx cy ")"])}
@@ -134,12 +128,6 @@
            :x cx
            :y (- cy min-radius)} (as-label label)]])
 
-(def model {:snp {:id :snp :name "Scottish National Party" :colour "yellow" :votes 100}
-                             :lab {:id :lab :name "Labour Party" :colour "red" :votes 90}
-                             :con {:id :con :name "Conservative Party" :colour "blue" :votes 80}
-                             :ld  {:id :ld :name "Liberal Democrats" :colour "GoldenRod" :votes 70}
-                             :grn {:id :grn :name "Scottish Green Party" :colour "green" :votes 60}
-                             :ukp {:id :ukp :name "United Kingdom Independence Party" :colour "DarkViolet" :votes 50}})
 
 (defn biggest-to-the-middle-sort
   "Sort this list of `maps` representing parties so that those with the most votes are in
