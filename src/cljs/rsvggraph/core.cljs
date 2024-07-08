@@ -1,10 +1,10 @@
-(ns swingometer.core
+(ns rsvggraph.core
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [swingometer.events]
-            [swingometer.subs]
-            [swingometer.views :as views]
-            [swingometer.config :as config]))
+            [rsvggraph.events]
+            [rsvggraph.subs]
+            [rsvggraph.views :as views]
+            [rsvggraph.config :as config]))
 
 
 (defn dev-setup []

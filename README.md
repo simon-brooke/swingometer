@@ -1,6 +1,6 @@
-# swingometer
+# radial-svg-graph
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to show votes in an election.
+A [re-frame](https://github.com/Day8/re-frame) application designed to show a radial SVG graph, possibly with several rings.
 
 ## Development Mode
 

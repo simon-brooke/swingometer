@@ -1,14 +1,13 @@
-(ns swingometer.swingometer
+(ns rsvggraph.rsvggraph
   (:require [clojure.string :as string]
             [re-com.core     :refer [h-box v-box box gap line label title slider checkbox p]]
             [re-com.box      :refer [flex-child-style]]
             [re-com.util     :refer [deref-or-value]]
-            [re-com.validate :refer [number-or-string? css-style? html-attr? validate-args-macro]]
-            [reagent.core    :as    reagent]))
+            [re-com.validate :refer [number-or-string? css-style? html-attr? validate-args-macro]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;; swingometer: an experiment in animating SVG from re-frame.
+;;;; rsvggraph: an experiment in animating SVG from re-frame.
 ;;;; Draws heavily on re-com..
 ;;;;
 ;;;; This program is free software; you can redistribute it and/or
@@ -31,12 +30,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; ------------------------------------------------------------------------------------
-;;  Component: swingometer
+;;  Component: rsvggraph
 ;; ------------------------------------------------------------------------------------
 
 ;;; It seems the defaults given here are just documentation; the defaults
 ;;; that are actually used are those given in the :or clause of the argument map.
-(def swingometer-args-desc
+(def rsvggraph-args-desc
   [{:name :model         :required true  :type "map | atom"
     :validate-fn map? :description "A map mapping keys to maps of the following structure: {:id :snp :name \"Scottish National Party\" :colour \"yellow\" :votes 1234}"}
    {:name :width         :required false :type "integer"                 :default "300"
@@ -45,12 +44,12 @@
     :validate-fn integer?          :description "a CSS height"}
    {:name :class         :required false :type "string"
     :validate-fn string?           :description "CSS class names, space separated, for the top-level SVG element"}
-   {:name :frame-class   :required false :type "string"                 :default "snm-frame"
+   {:name :frame-class   :required false :type "string"                 :default "rsvggraph-frame"
     :validate-fn string?           :description "CSS class names, space separated, for the frame"}
-   {:name :scale-class   :required false :type "string"                 :default "snm-scale"
+   {:name :scale-class   :required false :type "string"                 :default "rsvggraph-scale"
     :validate-fn string?           :description "CSS class names, space separated, for the scale"}
-   {:name :id            :required false :type "string"                 :default "meter"
-    :validate-fn string?           :description "Element id for this instance of the meter"}
+   {:name :id            :required false :type "string"                 :default "graph"
+    :validate-fn string?           :description "Element id for this instance of the graph"}
    {:name :gradations    :reduired false :type "integer"                :default 5
     :validate-fn integer?          :description "Number of gradations to show on the scale, not counting the point."}
    {:name :style         :required false :type "CSS style map"
@@ -59,9 +58,9 @@
     :validate-fn html-attr?        :description [:span "HTML attributes, like " [:code ":on-mouse-move"] [:br] "No " [:code ":class"] " or " [:code ":style"] "allowed"]}])
 
 
-;; the constant 140 represents the full sweep of the needle
-;; from the left end of the scale to right end, in degrees.
-(def full-scale-deflection 140)
+(def full-scale-deflection
+  "the full sweep of the needle from the left end of the scale to right end, in degrees."
+  360)
 
 
 (defn deflection
@@ -112,7 +111,7 @@
   at `cx`, cy` starting at `min-radius` and extending to `max-radius`, with the specified
   `label`."
   [cx cy min-radius max-radius angle label]
-  [:g {:class "snm-gradation"
+  [:g {:class "rsvggraph-gradation"
        :transform (string/join " " ["rotate(" angle cx cy ")"])}
    [:path {:d (string/join
                 " "
@@ -157,63 +156,68 @@
           others (recursively-draw-segments (rest still-to-do) (cons party done) total-votes cx cy radius)
           vote-share (* (/ (:votes party) total-votes) 100)]
       (if (> vote-share 1)
-        (cons [:g [:path {:class "snm-scale"
+        (cons [:g [:path {:class "rsvggraph-scale"
                           :id (str (:id party) "-segment")
                           :style {:stroke (:colour party)}
                           :d (describe-arc cx cy radius start-angle end-angle)}]
                (gradation cx cy (* radius 0.8) (* radius 1.1) start-angle
                           (str
-                            (if (> vote-share 5) (name (:id party)) "")
-                            (if (> vote-share 10) (str " " (as-label vote-share) "%"))))]
+                            (when (> vote-share 5) (name (:id party)) "")
+                            (when (> vote-share 10) (str " " (as-label vote-share) "%"))))]
               others)
         others))))
 
 
-(defn swingometer
-  "Render an SVG swinging needle meter"
+(defn rsvggraph
+  "Render an SVG radial graph. The idea here is there is a stack of rings,
+   each with zero or more segments. Each ring has an inner diameter and an 
+   outer diameter, each of which is expressed as a number in the range 0...1,
+   representing a fraction of the overall dimension of the graph. 
+   
+   The rings are drawn in ascending order of inner diameter.
+   
+   Each segment has a label and a magnitude"
   [& {:keys [model width height class scale-class frame-class id style attr]
       :or   {width          300
-             height         200
-             scale-class    "snm-scale"
-             frame-class    "snm-frame"
-             id "meter"}
+             height         300
+             scale-class    "rsvggraph-scale"
+             frame-class    "rsvggraph-frame"
+             id "graph"}
       :as   args}]
-  {:pre [(validate-args-macro swingometer-args-desc args "swingometer")]}
+  {:pre [(validate-args-macro rsvggraph-args-desc args "rsvggraph")]}
   (let [model (deref-or-value model)
         mid-point-deflection (/ full-scale-deflection 2)
-        cx (/ width 2)
-        cy (* height 0.90)
-        needle-length (* height 0.75)
-        scale-radius (* height 0.7)
-        gradation-inner (* height 0.55)
-        gradations 5
+        dimension (min width height)
+        cx (/ dimension 2)
+        cy (* dimension 0.50)
+        scale-radius (* dimension 0.45)
         total-votes (reduce + (map #(:votes %) (vals model)))]
     [box
      :align :start
      :child [:div
              (merge
-               {:class (str "swingometer  " class)
+               {:class (str "rsvggraph  " class)
                 :style (merge (flex-child-style "none")
-                              {:width width :height height}
+                              {:width dimension :height dimension}
                               style)}
                attr)
              [:svg {:xmlSpace "preserve"
                     :overflow "visible"
-                    :viewBox (string/join " " [0 0 width height])
-                    :width (str width "px")
-                    :height (str height "px")
+                    :viewBox (string/join " " [0 0 dimension dimension])
+                    :width (str dimension "px")
+                    :height (str dimension "px")
                     :y "0px"
                     :x "0px"
                     :version "1.1"
                     :id id
-                    :class (str "snm-meter " class)}
+                    :class (str "rsvggraph-graph " class)}
                             [:text
                {:text-anchor "middle"
-                :x (/ width 2)
-                :y (/ height 2)
-                :width "100"
+                :x (/ dimension 2)
+                :y (/ dimension 2)
+                :width (/ dimension 4)
                 :id (str id "-total-votes")
-                :class "snm-value"}[:tspan (reduce + (map :votes (vals model)))]]
+                :class "rsvggraph-value"}[:tspan (reduce + (map :votes (vals model)))]]
               [:path {:class scale-class
                       :id (str id "-scale")
                       :d (describe-arc cx cy scale-radius

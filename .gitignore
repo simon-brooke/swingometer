@@ -11,3 +11,5 @@ out
 *.tgz
 
 *.zip
+.lsp/
+.clj-kondo/

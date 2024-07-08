@@ -1,4 +1,4 @@
-(ns swingometer.utils
+(ns rsvggraph.utils
   (:require [re-com.core :refer [h-box v-box box gap title line label hyperlink-href align-style]]))
 
 ;;;; This file is just stolen wholesale from re-demo in the re-com package;

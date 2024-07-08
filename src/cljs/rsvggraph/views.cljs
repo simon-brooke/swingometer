@@ -1,12 +1,12 @@
-(ns swingometer.views
+(ns rsvggraph.views
   (:require [re-frame.core :as    re-frame]
             [re-com.core   :refer [h-box v-box box gap line label title progress-bar slider checkbox p single-dropdown]]
             [re-com.util   :refer [deref-or-value]]
-            [swingometer.swingometer :refer [swingometer  swingometer-args-desc]]
-            [swingometer.utils   :refer [panel-title title2 args-table github-hyperlink status-text]]
+            [rsvggraph.rsvggraph :refer [rsvggraph  rsvggraph-args-desc]]
+            [rsvggraph.utils   :refer [panel-title title2 args-table github-hyperlink status-text]]
             [reagent.core  :as    reagent]))
 
-(defn swingometer-demo
+(defn rsvggraph-demo
   []
   (let [model (reagent/atom {:snp {:id :snp :name "Scottish National Party" :colour "yellow" :votes 10}
                              :lab {:id :lab :name "Labour Party" :colour "red" :votes 10}
@@ -19,7 +19,7 @@
       [v-box
        :size     "auto"
        :gap      "10px"
-       :children [[panel-title "Swingometer"]
+       :children [[panel-title "rsvggraph"]
                   [h-box
                    :gap      "100px"
                    :children [[v-box
@@ -27,21 +27,21 @@
                                :width    "450px"
                                :children [[title2 "Notes"]
                                           [status-text "Wildly experimental"]
-                                          [p "An SVG swingometer intended to be useful in elections."]
+                                          [p "An SVG rsvggraph intended to be useful in elections."]
 
                                           [title2 "Behaviour"]
 
 
-                                          [args-table swingometer-args-desc]]]
+                                          [args-table rsvggraph-args-desc]]]
                               [v-box
                                :gap      "10px"
                                :children [[title2 "Demo"]
                                           [v-box
                                            :gap      "20px"
-                                           :children [[swingometer
+                                           :children [[rsvggraph
                                                        :model     model
-                                                       :height    600
-                                                       :width     1000]
+                                                       :height    500
+                                                       :width     500]
                                                       [title :level :level3 :label "Parameters"]
                                                       [h-box
                                                        :gap "10px"
@@ -127,11 +127,11 @@
 ;; core holds a reference to panel, so need one level of indirection to get figwheel updates
 (defn panel
   []
-  [swingometer-demo])
+  [rsvggraph-demo])
 
 
 (defn main-panel []
   (fn []
     [v-box
      :height "100%"
-     :children [[swingometer-demo]]]))
+     :children [[rsvggraph-demo]]]))

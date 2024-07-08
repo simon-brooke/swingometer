@@ -1,0 +1,40 @@
+{:id "ge2024"
+ :label "UK General Election 2024"
+ :children [{:id "no-show"
+             :label "Did not vote"
+             :magnitude 18365357}
+            {:id "voted"
+             :label "Voted"
+             :children [{:id "reform"
+                         :label "Reform UK Ltd."
+                         :magnitude 4091549}
+                        {:id "greenew"
+                         :label "Green Party of England and Wales"
+                         :magnitude 1939502}
+                        {:id "pc"
+                         :label "Plaid Cymru"
+                         :magnitude 194811}
+                        {:id "sf"
+                         :label "Sinn Féin"
+                         :magnitude 210891}
+                        {:id "ld"
+                         :label "Liberal Democrats"
+                         :magnitude 3499933}
+                        {:id "labour"
+                         :label "Labour"
+                         :magnitude 9712011}
+                        {:id "apni"
+                         :label "Alliance Party"
+                         :magnitude 117191}
+                        {:id "sdlp"
+                         :label "Social Democratic and Labour Party"
+                         :magnitude 86861}
+                        {:id "dup"
+                         :label "Democratic Unionist Party"
+                         :magnitude 172058}
+                        {:id "snp"
+                         :label "Scottish National Party"
+                         :magnitude 708759}
+                        {:id "con"
+                         :label "Conservative"
+                         :magnitude 6814469}]}]}

@@ -1,70 +1,73 @@
 /***************************************************************************\
  *                                                                         *
- *      swinging-needle-meter.css                                          *
+ *      rsvggraph.css                                                      *
  *                                                                         *
- *      CSS styling for the swinging needle meter itself.                  *
+ *      CSS styling for the radial svg graph itself.                       *
  *                                                                         *
 \***************************************************************************/
 
-.snm-cursor {
+svg {
+	border: thin solid gray;
+	object-fit: contain;
+}
+
+.rsvggraph-cursor {
 	stroke:#ff8500;
 	stroke-width: 3%;
 	stroke-opacity: 0.5;
 }
 
-.snm-frame {
+.rsvggraph-frame {
 	fill: none;
-	stroke-width: 5%;
-	stroke-linejoin: round;
-	stroke: #444444;
+	stroke: none;
 }
 
-.snm-gradation path {
+.rsvggraph-gradation path {
   stroke: black;
   stroke-width: 1;
 }
 
-.snm-gradation text {
+.rsvggraph-gradation text {
   font-size: 200%;
   font-weight: lighter;
 }
 
-.snm-hub {
+.rsvggraph-hub {
 	fill: #444444;
 }
 
-.snm-meter {
+.rsvggraph-graph {
 	height: 50%;
 	width: auto;
 }
 
-.snm-needle {
+.rsvggraph-needle {
 	stroke: black;
 	stroke-width: 1;
 }
 
-.snm-redzone {
+.rsvggraph-redzone {
 	fill:none;
 	stroke: maroon;
 	stroke-width: 10%;
 }
 
-.snm-scale {
+.rsvggraph-scale {
 	fill: none;
 	stroke: silver;
 	stroke-width: 10%;
 }
 
-.snm-target .snm-frame {
+.rsvggraph-target .rsvggraph-frame {
   stroke: green;
 }
 
-.snm-value {
+.rsvggraph-value {
   font-size: 400%;
   font-weight: bold;
   text-align: center;
 }
 
-.snm-warning .snm-frame {
+.rsvggraph-warning .rsvggraph-frame {
   stroke: maroon;
 }

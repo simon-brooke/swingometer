@@ -1,4 +1,4 @@
-(ns swingometer.config)
+(ns rsvggraph.config)
 
 (def debug?
   ^boolean goog.DEBUG)
