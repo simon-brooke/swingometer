@@ -1,40 +1,125 @@
 {:id "ge2024"
  :label "UK General Election 2024"
+ :colour "white"
  :children [{:id "no-show"
              :label "Did not vote"
-             :magnitude 18365357}
+             :quantity 18365357}
             {:id "voted"
              :label "Voted"
-             :children [{:id "reform"
-                         :label "Reform UK Ltd."
-                         :magnitude 4091549}
-                        {:id "greenew"
-                         :label "Green Party of England and Wales"
-                         :magnitude 1939502}
-                        {:id "pc"
-                         :label "Plaid Cymru"
-                         :magnitude 194811}
-                        {:id "sf"
-                         :label "Sinn Féin"
-                         :magnitude 210891}
-                        {:id "ld"
-                         :label "Liberal Democrats"
-                         :magnitude 3499933}
-                        {:id "labour"
+             :children [{:id "labour"
                          :label "Labour"
-                         :magnitude 9712011}
-                        {:id "apni"
-                         :label "Alliance Party"
-                         :magnitude 117191}
-                        {:id "sdlp"
-                         :label "Social Democratic and Labour Party"
-                         :magnitude 86861}
-                        {:id "dup"
-                         :label "Democratic Unionist Party"
-                         :magnitude 172058}
-                        {:id "snp"
-                         :label "Scottish National Party"
-                         :magnitude 708759}
+                         :colour "red"
+                         :quantity 9712011
+                         :children [{:id "negative"
+                                     :colour "gray"
+                                     :children [{:id "anti-tory"
+                                                 :label "To get the Tories out"
+                                                 :colour "#424242"
+                                                 :quantity 4658234}
+                                                {:id "change"
+                                                 :label "The country needs a change"
+                                                 :colour "#424242"
+                                                 :quantity 1261605}
+                                                {:id "nhs"
+                                                 :label "To support the NHS"
+                                                 :colour "#424242"
+                                                 :quantity 388186}
+                                                {:id "alternative"
+                                                 :label "The best alternative"
+                                                 :quantity 388186}
+                                                {:id "anti-sunak"
+                                                 :label "Rishi Sunak"
+                                                 :colour "#424242"
+                                                 :quantity 97047}
+                                                {:id "anti-snp"
+                                                 :label "To oust the SNP"
+                                                 :colour "#424242"
+                                                 :quantity 97047}]}
+                                    {:id "other"
+                                     :colour "maroon"
+                                     :quantity 291140}
+                                    {:id "positive"
+                                     :colour "red"
+                                     :children [{:id "policies"
+                                                 :label "I agree with their policies"
+                                                 :colour "#d32f2f"
+                                                 :quantity 485233}
+                                                {:id "mp"
+                                                 :label "Like my MP"
+                                                 :colour "#d32f2f"
+                                                 :quantity 194093}
+                                                {:id "fairer"
+                                                 :label "For a fairer society"
+                                                 :colour "#d32f2f"
+                                                 :quantity 194093}
+                                                {:id "habit"
+                                                 :label "I always vote Labour"
+                                                 :colour "#d32f2f"
+                                                 :quantity 194093}
+                                                {:id "honesty"
+                                                 :quantity 194093}
+                                                {:id "caop"
+                                                 :label "Care about ordinary people"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}
+                                                {:id "fwc"
+                                                 :label "For the working class"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}
+                                                {:id "cl"
+                                                 :label "Address the cost of living"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}
+                                                {:id "stability"
+                                                 :label "Economic stability"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}
+                                                {:id "pro-starmer"
+                                                 :label "Keir Starmer"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}
+                                                {:id "services"
+                                                 :label "For better public services"
+                                                 :colour "#d32f2f"
+                                                 :quantity 97047}]}]}
                         {:id "con"
                          :label "Conservative"
-                         :magnitude 6814469}]}]}
+                         :colour "blue"
+                         :quantity 6814469}
+                        {:id "ld"
+                         :label "Liberal Democrats"
+                         :colour "gold"
+                         :quantity 3499933}
+                        {:id "snp"
+                         :label "Scottish National Party"
+                         :colour "yellow"
+                         :quantity 708759}
+                        {:id "sf"
+                         :label "Sinn Féin"
+                         :quantity 210891}
+                        {:id "independents"
+                         :label "independents"
+                         :colour "silver"
+                         :quantity 564243}
+                        {:id "reform"
+                         :label "Reform UK Ltd."
+                         :colour "cyan"
+                         :quantity 4091549}
+                        {:id "dup"
+                         :label "Democratic Unionist Party"
+                         :quantity 172058}
+                        {:id "greenew"
+                         :label "Green Party of England and Wales"
+                         :colour "green"
+                         :quantity 1939502}
+                        {:id "pc"
+                         :label "Plaid Cymru"
+                         :colour "#005b54"
+                         :quantity 194811}
+                        {:id "apni"
+                         :label "Alliance Party"
+                         :colour "#f6cb2f"
+                         :quantity 117191}
+                        {:id "sdlp"
+                         :label "Social Democratic and Labour Party"
+                         :quantity 86861}]}]}
