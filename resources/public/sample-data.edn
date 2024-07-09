@@ -10,8 +10,13 @@
                          :label "Labour"
                          :colour "red"
                          :quantity 9712011
-                         :children [{:id "negative"
-                                     :colour "gray"
+                         :children [{:id "other"
+                                     :label "Other"
+                                     :colour "#C0C0C0"
+                                     :quantity 291140}
+                                    {:id "negative"
+                                     :label "Negative"
+                                     :colour "#C0C0C0"
                                      :children [{:id "anti-tory"
                                                  :label "To get the Tories out"
                                                  :colour "#424242"
@@ -35,13 +40,11 @@
                                                  :label "To oust the SNP"
                                                  :colour "#424242"
                                                  :quantity 97047}]}
-                                    {:id "other"
-                                     :colour "maroon"
-                                     :quantity 291140}
                                     {:id "positive"
+                                     :label "Positive"
                                      :colour "red"
                                      :children [{:id "policies"
-                                                 :label "I agree with their policies"
+                                                 :label "Agree with policies"
                                                  :colour "#d32f2f"
                                                  :quantity 485233}
                                                 {:id "mp"
@@ -63,11 +66,11 @@
                                                  :colour "#d32f2f"
                                                  :quantity 97047}
                                                 {:id "fwc"
-                                                 :label "For the working class"
+                                                 :label "For working class"
                                                  :colour "#d32f2f"
                                                  :quantity 97047}
                                                 {:id "cl"
-                                                 :label "Address the cost of living"
+                                                 :label "Address cost of living"
                                                  :colour "#d32f2f"
                                                  :quantity 97047}
                                                 {:id "stability"
@@ -79,7 +82,7 @@
                                                  :colour "#d32f2f"
                                                  :quantity 97047}
                                                 {:id "services"
-                                                 :label "For better public services"
+                                                 :label "Better public services"
                                                  :colour "#d32f2f"
                                                  :quantity 97047}]}]}
                         {:id "con"
@@ -98,7 +101,7 @@
                          :label "Sinn Féin"
                          :quantity 210891}
                         {:id "independents"
-                         :label "independents"
+                         :label "Independents"
                          :colour "silver"
                          :quantity 564243}
                         {:id "reform"
@@ -106,10 +109,10 @@
                          :colour "cyan"
                          :quantity 4091549}
                         {:id "dup"
-                         :label "Democratic Unionist Party"
+                         :label "DUP"
                          :quantity 172058}
                         {:id "greenew"
-                         :label "Green Party of England and Wales"
+                         :label "Green Party"
                          :colour "green"
                          :quantity 1939502}
                         {:id "pc"
@@ -121,5 +124,5 @@
                          :colour "#f6cb2f"
                          :quantity 117191}
                         {:id "sdlp"
-                         :label "Social Democratic and Labour Party"
+                         :label "SDLP"
                          :quantity 86861}]}]}

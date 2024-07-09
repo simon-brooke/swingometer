@@ -13,3 +13,5 @@ out
 *.zip
 .lsp/
 .clj-kondo/
+
+*.svg

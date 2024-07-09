@@ -1,11 +1,14 @@
 (ns rsvggraph.core
-  (:require [clojure.math :refer [cos PI sin]]
+  (:require [clojure.math :refer [cos floor PI sin]]
             [clojure.string :refer [join replace]]
             [clojure.xml :refer [emit]]
-            [fastmath.core :refer [pow]]
             [hiccup2.core :refer [html]]
             [rsvggraph.data :refer [normalise]]))
 
+
+(def ^:dynamic *background* "white")
+
+(def ^:dynamic *foreground* "black")
 
 
 (defn polar-to-cartesian
@@ -30,6 +33,21 @@
     sweep (if (> end-angle start-angle) 1 0)]
     (join " " ["M" (:x start) (:y start) "A" radius radius 0 large-arc? sweep (:x end) (:y end)])))
 
+(defn- text-path [datum tp-id diameter thickness start-angle end-angle]
+  [:path {:class "rsvggraph-text-path"
+          :id tp-id
+          :style {:fill "none"
+                  :stroke "none"}
+          :d (let [angle (/ (+ start-angle end-angle) 2)
+                   radius (/ diameter 2)
+                   start (polar-to-cartesian diameter diameter radius angle)
+                   end (polar-to-cartesian diameter diameter diameter angle)]
+               (if (< (- (:right datum) (:left datum)) 0.08)
+
+                 (format "M %d %d L %d %d" (int (:x start)) (int (:y start))
+                         (int (:x end)) (int (:y end)))
+                 (describe-arc diameter diameter (- radius (* 0.9 thickness)) start-angle end-angle)))}])
+
 (defn draw-segment
   [datum diameter]
   (let [r' (/ diameter 2)
@@ -38,7 +56,8 @@
         start-angle (* (:left datum) 360)
         end-angle (* (:right datum) 360)
         id (str (:id datum) "-segment")
-        path-data (describe-arc r' r' radius start-angle end-angle)]
+        tp-id (str "tp-" id)
+        path-data (describe-arc diameter diameter radius start-angle end-angle)]
 ;;    (println (format "Id: %s; radius: %s; start: %s; end: %s; thickness %s" id radius start-angle end-angle thickness))
     [:g {:id (str id "group")}
      [:path {:class "rsvggraph-segment"
@@ -47,39 +66,51 @@
                      :stroke (:colour datum)
                      :stroke-width thickness}
              :d path-data}]
-     [:text [:textPath {:href (str "#" id)
-                        :path path-data} (:label datum)]]]))
+     (text-path datum tp-id diameter thickness start-angle end-angle)
+     [:text {:style {:fill *foreground*
+                     :font-family "sans-serif"
+                     :font-weight "bold"
+                     :font-size (str (floor (* 0.2 thickness)))}}
+      [:textPath {:xlink:href (str "#" tp-id)} [:tspan (:label datum)]]]]))
+
+;; <text
+;;      xml:space="preserve"
+;;      style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffcc00;stroke-width:4.9852"
+;;      id="text562"><textPath
+;;        xlink:href="#no-show-segment"
+;;        id="textPath770"><tspan
+;;          id="tspan560">Did not vote</tspan></textPath></text>
 
 (defn flatten-data
   [data]
   (cond (empty? (:children data)) data
         :else (flatten (cons (dissoc data :children) (map flatten-data (:children data))))))
 
-(def ^:dynamic *background* "white")
-
-(def ^:dynamic *foreground* "black")
-
 (defn data->svg
   [data diameter]
-  (let [data' (normalise data)]
+  (let [data' (normalise data)
+        dimension (* 2 diameter)]
     [:svg {:xmlSpace "preserve"
            :overflow "visible"
-           :viewBox (join " " [0 0 diameter diameter])
-           :width (str diameter "px")
-           :height (str diameter "px")
+           :viewBox (join " " [0 0 dimension dimension])
+           :width (str dimension "px")
+           :height (str dimension "px")
            :y "0px"
            :x "0px"
            :version "1.1"
            :id (:id data')
            :class (str "rsvggraph-graph")
-           :xmlns "http://www.w3.org/2000/svg"}
-     [:circle {:id (str (:id data') "-background") :cx (/ diameter 2) :cy (/ diameter 2) :r (/ diameter 2) :style {:fill "white"}}]
+           :xmlns "http://www.w3.org/2000/svg"
+           :xmlns:xlink "http://www.w3.org/1999/xlink"}
+     [:circle {:id (str (:id data') "-background") :cx diameter :cy diameter :r (/ diameter 2) :style {:fill "white"}}]
      [:text
       {:text-anchor "middle"
-       :x (/ diameter 2)
-       :y (/ diameter 2)
+       :x diameter
+       :y diameter
        :width (/ diameter 4)
        :id (str (:id data') "-title")
+       :style {:font-family "sans-serif"
+               :font-weight "bold"}
        :class "rsvggraph-value"} [:tspan (:label data) ": " (:quantity data)]]
      (map #(draw-segment % diameter) (flatten-data data))]))
 
