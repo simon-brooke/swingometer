@@ -36,7 +36,7 @@
           ["M" (:x start) (:y start) "A" radius radius 0 large-arc? sweep
            (:x end) (:y end)])))
 
-(def ^:dynamic *minor-segment-threshold* 0.07)
+(def ^:dynamic *minor-segment-threshold* 0.08)
 
 (defn- minor-segment? [datum]
   (< (- (:right datum) (:left datum)) *minor-segment-threshold*))
@@ -97,7 +97,7 @@
                      :font-weight "bold"
                      :font-size (str (font-size thickness))}}
       [:textPath {:xlink:href (str "#" tp-id)
-                  :startOffset "2%"} [:tspan (:label datum)]]]]))
+                  :startOffset "2%"} [:tspan (format "%s: %.2f%%" (:label datum) (* 100 (:proportion datum)))]]]]))
 
 ;; <text
 ;;      xml:space="preserve"
