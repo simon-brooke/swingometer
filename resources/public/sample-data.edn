@@ -1,22 +1,20 @@
 {:id "ge2024"
  :label "UK General Election 2024"
  :colour "white"
- :children [{:id "no-show"
-             :label "Did not vote"
-             :quantity 18365357}
-            {:id "voted"
+ :children [{:id "voted"
              :label "Voted"
+             :color "chartreuse"
              :children [{:id "labour"
                          :label "Labour"
                          :colour "red"
                          :quantity 9712011
                          :children [{:id "other"
                                      :label "Other"
-                                     :colour "#C0C0C0"
+                                     :colour "silver"
                                      :quantity 291140}
                                     {:id "negative"
                                      :label "Negative"
-                                     :colour "#C0C0C0"
+                                     :colour "silver"
                                      :children [{:id "anti-tory"
                                                  :label "To get the Tories out"
                                                  :colour "#424242"
@@ -108,9 +106,6 @@
                          :label "Reform UK Ltd."
                          :colour "cyan"
                          :quantity 4091549}
-                        {:id "dup"
-                         :label "DUP"
-                         :quantity 172058}
                         {:id "greenew"
                          :label "Green Party"
                          :colour "green"
@@ -119,10 +114,17 @@
                          :label "Plaid Cymru"
                          :colour "#005b54"
                          :quantity 194811}
+                        {:id "dup"
+                         :label "DUP"
+                         :quantity 172058}
                         {:id "apni"
                          :label "Alliance Party"
                          :colour "#f6cb2f"
                          :quantity 117191}
                         {:id "sdlp"
                          :label "SDLP"
-                         :quantity 86861}]}]}
+                         :quantity 86861}]}
+            {:id "no-show"
+             :label "Did not vote"
+             :colour "silver"
+             :quantity 18365357}]}
