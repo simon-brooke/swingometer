@@ -10,6 +10,13 @@
 
 (def ^:dynamic *foreground* "black")
 
+;; TODO: Right, so most of this is good. But I need to adjust the positions
+;; of minor segment labels -- by sliding some of them sideways -- before 
+;; rendering. So probably what I need to do is one pass through the data
+;; structure, tagging each node with geometry information (especially for
+;; minor segment labels); then a second pass to sort out spacial collisions;
+;; and don't try to generate the SVG until that has been done. But I need
+;; *all* the geometry to be complete.
 
 (defn polar-to-cartesian
   "Return, as a map with keys :x. :y, the cartesian coordinates at the point
@@ -44,33 +51,65 @@
 (defn- font-size [thickness]
   (int (* 0.15 thickness)))
 
+(defn left-half?
+  [datum]
+  (> (+ (:left datum) (:right datum)) 1))
+
+(defn- label-width
+  "Return the anticipated width of the label associated with this `datum`."
+  [datum thickness]
+  (* (count (:label datum)) (font-size thickness)))
+
 (defn- text-path [datum tp-id geometry thickness start-angle end-angle]
   [:path {:class "rsvggraph-text-path"
           :id tp-id
           :style {:fill "none"
                   :stroke "none"}
-          :d (let [angle (if (> (+ start-angle end-angle) 360) start-angle end-angle)
+          :d (let [angle (if (left-half? datum) start-angle end-angle)
                    radius (:radius geometry)
                    end (polar-to-cartesian (assoc geometry :radius (* 1.2 (:radius geometry)) :angle angle))
                    height (int (:y end))]
                (if (minor-segment? datum)
-                 (if (> angle 180)
-                   (format "M %d %d L %d %d" (- (int (:x end)) (* (count (:label datum)) (font-size thickness))) height
-                         (int (:x end)) height)
+                 (if (left-half? datum)
+                   (format "M %d %d L %d %d" (- (int (:x end)) (label-width datum thickness)) height
+                           (int (:x end)) height)
                    (format "M %d %d L %d %d" (int (:x end)) height (:width geometry) height))
                  (describe-arc (assoc geometry :radius (- radius (* 0.9 thickness)))
                                start-angle end-angle)))}])
 
 (defn- label-indicator-path [geometry angle]
   (let [start (polar-to-cartesian (assoc geometry :angle angle))
-        end (polar-to-cartesian 
+        end (polar-to-cartesian
              (assoc geometry :radius (* 1.2 (:radius geometry)) :angle angle))]
     (format "M %d %d L %d %d" (int (:x start)) (int (:y start))
             (int (:x end)) (int (:y end)))))
 
 (defn- label-indicator [datum geometry start-angle end-angle]
-  (when (minor-segment? datum)[:path {:class "rsvggraph-minor-label-indicator" :style {:fill "none" :stroke *foreground* :stroke-width "thin"}
-             :d (label-indicator-path geometry (if (> (+ start-angle end-angle) 360) start-angle end-angle))}]))
+  (when (minor-segment? datum) [:path {:class "rsvggraph-minor-label-indicator" :style {:fill "none" :stroke *foreground* :stroke-width "thin"}
+                                       :d (label-indicator-path geometry (if (left-half? datum) start-angle end-angle))}]))
+
+(defn segment-geometry
+  [datum geometry]
+  (let [thickness (/ (:radius geometry) (:ring datum))
+        left? (left-half? datum)
+        start-angle (* (:left datum) 360)
+        end-angle (* (:right datum) 360)
+        angle (if left? start-angle end-angle)
+        kink (polar-to-cartesian
+              (assoc geometry :radius (* 1.2 (:radius geometry)) :angle angle))
+        label-bottom (int (:y kink))]
+    (merge geometry
+           {:thickness thickness
+            :radius (- (:radius geometry) (/ thickness 2))
+            :start-angle start-angle
+            :end-angle end-angle
+            :text-box (when (minor-segment? datum) 
+                        {:left (if left? (- (int (:x kink)) (label-width datum thickness))
+                                                              (int (:x kink))) 
+                         :right (if left? (int (:x kink))
+                                    (+ (int (:x kink)) (label-width datum thickness))) 
+                         :bottom label-bottom
+                         :top (+ label-bottom (font-size datum))})})))
 
 (defn draw-segment
   [datum geometry]
